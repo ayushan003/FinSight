@@ -1,0 +1,83 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  clerkUserId   String    @unique
+  email         String    @unique
+  name          String?
+  imageUrl      String?
+  industry      String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  bio           String?
+  experience    Int?
+  skills        Json?     // Stored as JSON array: ["Valuation","DCF","Risk"]
+
+  assessments   Assessment[]
+  investmentMemo InvestmentMemo?
+  companyReport  CompanyReport[]
+}
+
+model Assessment {
+  id             String   @id @default(uuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id])
+  quizScore      Float
+  questions      Json     // Array of {question, answer, userAnswer, isCorrect}
+  category       String
+  improvementTip String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model InvestmentMemo {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  content   String
+  qualityScore  Float?
+  feedback      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CompanyReport {
+  id             String   @id @default(uuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id])
+  content        String
+  companyDescription String?
+  companyName    String
+  sector         String
+  status         String   @default("draft")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model IndustryInsight {
+  id                String   @id @default(uuid())
+  industry          String   @unique
+  salaryRanges      Json     // [{role, min, max, median, location}]
+  growthRate        Float
+  demandLevel       String
+  topSkills         Json     // ["skill1","skill2"]
+  marketOutlook     String
+  keyTrends         Json     // ["trend1","trend2"]
+  recommendedSkills Json     // ["skill1","skill2"]
+  lastUpdated       DateTime @default(now())
+  nextUpdate        DateTime
+
+  @@index([industry])
+}
