@@ -56,22 +56,22 @@ NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/onboarding
 
 ```
 ┌─────────────────────────────────────────────────┐
-│                   Next.js App                    │
-│              (App Router + React 19)             │
+│                   Next.js App                   │
+│              (App Router + React 19)            │
 ├──────────┬──────────────────────┬───────────────┤
 │  Pages   │   Server Actions     │  Components   │
 │ (server) │   (server, "use      │  (client,     │
-│          │    server")           │   "use        │
+│          │    server")          │    "use       │
 │          │                      │    client")   │
 ├──────────┴──────────────────────┴───────────────┤
-│              Prisma ORM + SQLite                 │
-│                (prisma/dev.db)                   │
+│              Prisma ORM + SQLite                │
+│                (prisma/dev.db)                  │
 ├─────────────────────────────────────────────────┤
-│          Google Gemini 2.5 Flash API             │
-│         (structured JSON + markdown)             │
+│          Google Gemini 2.5 Flash API            │
+│         (structured JSON + markdown)            │
 ├─────────────────────────────────────────────────┤
-│              Clerk Authentication                │
-│        (middleware-protected routes)             │
+│              Clerk Authentication               │
+│        (middleware-protected routes)            │
 └─────────────────────────────────────────────────┘
 ```
 
