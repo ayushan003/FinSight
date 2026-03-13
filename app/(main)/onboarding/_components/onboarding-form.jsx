@@ -66,12 +66,12 @@ const OnboardingForm = ({ industries }) => {
   };
 
   useEffect(() => {
-    if (updateResult?.success && !updateLoading) {
+    if (updateResult && !updateLoading) {
       toast.success("Analyst profile completed successfully!");
       router.push("/dashboard");
       router.refresh();
     }
-  }, [updateResult, updateLoading]);
+  }, [updateResult, updateLoading, router]);
 
   const watchIndustry = watch("industry");
 

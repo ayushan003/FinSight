@@ -129,13 +129,8 @@ export default function MemoBuilder({ initialContent }) {
     }
   };
 
-  const onSubmit = async (data) => {
+  const onSubmit = async () => {
     try {
-      const formattedContent = previewContent
-        .replace(/\n/g, "\n")
-        .replace(/\n\s*\n/g, "\n\n")
-        .trim();
-
       await saveMemoFn(previewContent);
     } catch (error) {
       console.error("Save error:", error);

@@ -52,17 +52,30 @@ export async function getIndustryInsights() {
     where: { industry: user.industry },
   });
 
-  // If no insights exist, generate them
-  if (!insight) {
+  // Regenerate if missing OR stale (past nextUpdate date)
+  if (!insight || new Date(insight.nextUpdate) < new Date()) {
     const generated = await generateAIInsights(user.industry);
 
-    insight = await db.industryInsight.create({
-      data: {
-        industry: user.industry,
-        ...dehydrateInsight(generated),
-        nextUpdate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-      },
-    });
+    if (insight) {
+      // Update existing stale insight
+      insight = await db.industryInsight.update({
+        where: { industry: user.industry },
+        data: {
+          ...dehydrateInsight(generated),
+          lastUpdated: new Date(),
+          nextUpdate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        },
+      });
+    } else {
+      // Create new insight
+      insight = await db.industryInsight.create({
+        data: {
+          industry: user.industry,
+          ...dehydrateInsight(generated),
+          nextUpdate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        },
+      });
+    }
   }
 
   return hydrateInsight(insight);

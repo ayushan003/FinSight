@@ -52,18 +52,10 @@ export default function Quiz() {
     }
   };
 
-  const calculateScore = () => {
-    let correct = 0;
-    answers.forEach((answer, index) => {
-      if (answer === quizData[index].correctAnswer) correct++;
-    });
-    return (correct / quizData.length) * 100;
-  };
-
   const finishQuiz = async () => {
-    const score = calculateScore();
     try {
-      await saveQuizResultFn(quizData, answers, score);
+      // Score is now computed server-side for integrity
+      await saveQuizResultFn(quizData, answers);
       toast.success("Assessment completed!");
     } catch (error) {
       toast.error(error.message || "Failed to save assessment results");
