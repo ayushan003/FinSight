@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -19,7 +19,7 @@ model User {
 
   bio           String?
   experience    Int?
-  skills        Json?     // Stored as JSON array: ["Valuation","DCF","Risk"]
+  skills        Json?     // Stored as native JSON array: ["Valuation","DCF","Risk"]
 
   assessments   Assessment[]
   investmentMemo InvestmentMemo?
