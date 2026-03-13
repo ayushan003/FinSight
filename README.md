@@ -1,9 +1,7 @@
-# FinSight AI
+# **[FinSight AI](https://finsight-pied.vercel.app/)**
 
 **AI-powered financial intelligence platform** for sector analysis, investment memos, company reports, and finance knowledge assessments.
 > Built with Next.js 15, Prisma + PostgreSQL, Google Gemini 2.5 Flash, Clerk Auth
-
-## **[FinSight AI](https://finsight-pied.vercel.app/)**
 
 ![FinSight Dashboard](https://github.com/user-attachments/assets/8074e39b-91f8-4374-b614-c22fede297c8)
 ---
