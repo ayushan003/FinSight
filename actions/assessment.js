@@ -62,13 +62,23 @@ export async function generateQuiz() {
   }
 }
 
-export async function saveQuizResult(questions, answers, score) {
+export async function saveQuizResult(questions, answers) {
   const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
+
+  if (!Array.isArray(questions) || !Array.isArray(answers)) {
+    throw new Error("Invalid input: questions and answers must be arrays");
+  }
+
+  if (questions.length === 0 || questions.length !== answers.length) {
+    throw new Error("Invalid input: questions and answers must have matching length");
+  }
+
   const user = await db.user.findUnique({
     where: { clerkUserId: userId },
   });
   if (!user) throw new Error("User not found");
+
   const questionResults = questions.map((q, index) => ({
     question: q.question,
     answer: q.correctAnswer,
@@ -76,6 +86,11 @@ export async function saveQuizResult(questions, answers, score) {
     isCorrect: q.correctAnswer === answers[index],
     explanation: q.explanation,
   }));
+
+  // Compute score server-side — never trust client-provided scores
+  const correctCount = questionResults.filter((q) => q.isCorrect).length;
+  const score = (correctCount / questions.length) * 100;
+
   const wrongAnswers = questionResults.filter((q) => !q.isCorrect);
   let improvementTip = null;
   if (wrongAnswers.length > 0) {
