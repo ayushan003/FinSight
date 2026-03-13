@@ -4,6 +4,7 @@ import { db } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { parseJsonField } from "@/lib/sqlite-helpers";
+import { reportSchema } from "@/app/lib/schema";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
@@ -11,6 +12,9 @@ const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 export async function generateCompanyReport(data) {
   const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
+
+  // Validate input server-side
+  const validated = reportSchema.parse(data);
 
   const user = await db.user.findUnique({
     where: { clerkUserId: userId },
@@ -21,7 +25,7 @@ export async function generateCompanyReport(data) {
   const skills = parseJsonField(user.skills, []);
 
   const prompt = `
-    Write a structured company analysis report for ${data.companyName} in the ${data.sector} sector.
+    Write a structured company analysis report for ${validated.companyName} in the ${validated.sector} sector.
     
     About the analyst:
     - Sector Focus: ${user.industry}
@@ -29,8 +33,10 @@ export async function generateCompanyReport(data) {
     - Competencies: ${skills.join(", ")}
     - Background: ${user.bio}
     
-    Company/Sector Context:
-    ${data.companyDescription}
+    Company/Sector Context (user-provided):
+    ---BEGIN CONTEXT---
+    ${validated.companyDescription}
+    ---END CONTEXT---
     
     Requirements:
     1. Use a clear, analytical tone
@@ -52,9 +58,9 @@ export async function generateCompanyReport(data) {
     const report = await db.companyReport.create({
       data: {
         content,
-        companyDescription: data.companyDescription,
-        companyName: data.companyName,
-        sector: data.sector,
+        companyDescription: validated.companyDescription,
+        companyName: validated.companyName,
+        sector: validated.sector,
         status: "completed",
         userId: user.id,
       },

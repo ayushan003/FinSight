@@ -5,6 +5,7 @@ import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { generateAIInsights } from "./dashboard";
 import { dehydrateInsight, stringifyJsonField } from "@/lib/sqlite-helpers";
+import { onboardingSchema } from "@/app/lib/schema";
 
 export async function updateUser(data) {
   const { userId } = await auth();
@@ -16,19 +17,24 @@ export async function updateUser(data) {
 
   if (!user) throw new Error("User not found");
 
+  // Validate input server-side
+  const validated = onboardingSchema.parse(data);
+
   try {
+    const formattedIndustry = validated.industry;
+
     // Check if sector insight exists
     let industryInsight = await db.industryInsight.findUnique({
-      where: { industry: data.industry },
+      where: { industry: formattedIndustry },
     });
 
     // If sector doesn't exist, generate insights
     if (!industryInsight) {
-      const insights = await generateAIInsights(data.industry);
+      const insights = await generateAIInsights(formattedIndustry);
 
       industryInsight = await db.industryInsight.create({
         data: {
-          industry: data.industry,
+          industry: formattedIndustry,
           ...dehydrateInsight(insights),
           nextUpdate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         },
@@ -39,14 +45,15 @@ export async function updateUser(data) {
     const updatedUser = await db.user.update({
       where: { id: user.id },
       data: {
-        industry: data.industry,
-        experience: data.experience,
-        bio: data.bio,
-        skills: stringifyJsonField(data.skills),
+        industry: formattedIndustry,
+        experience: validated.experience,
+        bio: validated.bio,
+        skills: stringifyJsonField(validated.skills),
       },
     });
 
     revalidatePath("/");
+    revalidatePath("/dashboard");
     return updatedUser;
   } catch (error) {
     console.error("Error updating user and sector:", error.message);

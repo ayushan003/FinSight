@@ -12,6 +12,10 @@ export async function saveMemo(content) {
   const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
 
+  if (!content || typeof content !== "string") {
+    throw new Error("Memo content is required");
+  }
+
   const user = await db.user.findUnique({
     where: { clerkUserId: userId },
   });
@@ -61,6 +65,14 @@ export async function improveWithAI({ current, type }) {
   const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
 
+  if (!current || typeof current !== "string") {
+    throw new Error("Content to improve is required");
+  }
+
+  if (!type || typeof type !== "string") {
+    throw new Error("Section type is required");
+  }
+
   const user = await db.user.findUnique({
     where: { clerkUserId: userId },
   });
@@ -70,7 +82,11 @@ export async function improveWithAI({ current, type }) {
   const prompt = `
     As an expert financial analyst, improve the following ${type} section for an investment memo in the ${user.industry} sector.
     Make it more impactful, quantifiable, and aligned with financial industry standards.
-    Current content: "${current}"
+
+    Content to improve:
+    ---BEGIN CONTENT---
+    ${current}
+    ---END CONTENT---
 
     Requirements:
     1. Use precise financial language
