@@ -1,11 +1,11 @@
 # FinSight AI
 
 **AI-powered financial intelligence platform** for sector analysis, investment memos, company reports, and finance knowledge assessments.
+> Built with Next.js 15, Prisma + PostgreSQL, Google Gemini 2.5 Flash, Clerk Auth
 
-> **[Live Demo →](https://your-app.vercel.app)** · Built with Next.js 15, Prisma + PostgreSQL, Google Gemini 2.5 Flash, Clerk Auth
+## **[FinSight AI](https://finsight-pied.vercel.app/)**
 
-![FinSight Dashboard](https://your-screenshot-url-here.png)
-
+![FinSight Dashboard](https://github.com/user-attachments/assets/8074e39b-91f8-4374-b614-c22fede297c8)
 ---
 
 ## What I Built & Why
@@ -59,19 +59,19 @@ Adaptive quiz system with 10 MCQs per assessment, tailored to user's sector and 
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                    Next.js 15 App Router                  │
-│                                                           │
-│  Pages (SSR)  ←→  Server Actions ("use server")           │
-│  Components (CSR) ←→  useFetch hook                       │
+│                    Next.js 15 App Router                │
+│                                                         │
+│  Pages (SSR)  ←→  Server Actions ("use server")         │
+│  Components (CSR) ←→  useFetch hook                     │
 ├─────────────────────────────────────────────────────────┤
-│              Prisma ORM + PostgreSQL (Neon)                │
-│         5 models · native JSON · indexed queries          │
+│              Prisma ORM + PostgreSQL (Neon)             │
+│         5 models · native JSON · indexed queries        │
 ├─────────────────────────────────────────────────────────┤
-│              Google Gemini 2.5 Flash API                   │
-│          structured JSON + markdown generation            │
+│              Google Gemini 2.5 Flash API                │
+│          structured JSON + markdown generation          │
 ├─────────────────────────────────────────────────────────┤
-│                 Clerk Authentication                       │
-│           middleware-protected routes + sync              │
+│                 Clerk Authentication                    │
+│           middleware-protected routes + sync            │
 └─────────────────────────────────────────────────────────┘
 ```
 
