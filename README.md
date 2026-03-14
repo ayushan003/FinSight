@@ -3,7 +3,7 @@
 **AI-powered financial intelligence platform** for sector analysis, investment memos, company reports, and finance knowledge assessments.
 > Built with Next.js 15, Prisma + PostgreSQL, Google Gemini 2.5 Flash, Clerk Auth
 
-![FinSight Dashboard](https://github.com/user-attachments/assets/8074e39b-91f8-4374-b614-c22fede297c8)
+![FinSight Dashboard](https://raw.githubusercontent.com/ayushan003/FinSight/main/public/dashboard.png)
 ---
 
 ## What I Built & Why
