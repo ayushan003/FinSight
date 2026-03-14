@@ -9,8 +9,6 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Cell,
-  defs,
 } from "recharts";
 import {
   BriefcaseIcon,
@@ -31,7 +29,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 
 const DashboardView = ({ insights }) => {
-  // Filter valid entries, sort by median descending, take top 5 only
+  // Filter valid entries, keep original AI order, take top 5
   const salaryData = insights.salaryRanges
     .filter(
       (range) =>
@@ -44,7 +42,6 @@ const DashboardView = ({ insights }) => {
       name: range.role,
       median: Math.round(range.median / 1000),
     }))
-    .sort((a, b) => b.median - a.median)
     .slice(0, 5);
 
   const getDemandLevelColor = (level) => {
@@ -204,7 +201,7 @@ const DashboardView = ({ insights }) => {
         </Card>
       </div>
 
-      {/* Compensation Chart — Short thick bars */}
+      {/* Compensation Chart — Thick chunky bars */}
       <Card className="border-border/50">
         <CardHeader>
           <CardTitle>Compensation Benchmarks by Role</CardTitle>
@@ -218,7 +215,7 @@ const DashboardView = ({ insights }) => {
               <BarChart
                 data={salaryData}
                 margin={{ top: 10, right: 10, left: 0, bottom: 5 }}
-                barCategoryGap="25%"
+                barCategoryGap="15%"
               >
                 <defs>
                   <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
@@ -266,8 +263,7 @@ const DashboardView = ({ insights }) => {
                 <Bar
                   dataKey="median"
                   fill="url(#barGradient)"
-                  radius={[6, 6, 0, 0]}
-                  maxBarSize={80}
+                  radius={[8, 8, 0, 0]}
                 />
               </BarChart>
             </ResponsiveContainer>
