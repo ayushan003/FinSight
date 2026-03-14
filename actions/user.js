@@ -5,7 +5,7 @@ import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { generateAIInsights } from "./dashboard";
 import { dehydrateInsight, stringifyJsonField } from "@/lib/sqlite-helpers";
-import { onboardingSchema } from "@/app/lib/schema";
+import { updateUserSchema } from "@/app/lib/schema";
 
 export async function updateUser(data) {
   const { userId } = await auth();
@@ -18,7 +18,7 @@ export async function updateUser(data) {
   if (!user) throw new Error("User not found");
 
   // Validate input server-side
-  const validated = onboardingSchema.parse(data);
+  const validated = updateUserSchema.parse(data);
 
   try {
     const formattedIndustry = validated.industry;
