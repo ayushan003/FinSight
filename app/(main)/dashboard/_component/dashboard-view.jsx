@@ -10,6 +10,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   Cell,
+  defs,
 } from "recharts";
 import {
   BriefcaseIcon,
@@ -102,15 +103,6 @@ const DashboardView = ({ insights }) => {
     new Date(insights.nextUpdate),
     { addSuffix: true }
   );
-
-  // Blue gradient — tallest bar gets deepest blue
-  const getBarFill = (index, total) => {
-    const ratio = index / Math.max(total - 1, 1);
-    const r = Math.round(59 + ratio * (147 - 59));
-    const g = Math.round(130 + ratio * (197 - 130));
-    const b = Math.round(246 + ratio * (253 - 246));
-    return `rgb(${r}, ${g}, ${b})`;
-  };
 
   return (
     <div className="space-y-6">
@@ -212,7 +204,7 @@ const DashboardView = ({ insights }) => {
         </Card>
       </div>
 
-      {/* Compensation Chart — Median Only, Top 5 */}
+      {/* Compensation Chart — Short thick bars */}
       <Card className="border-border/50">
         <CardHeader>
           <CardTitle>Compensation Benchmarks by Role</CardTitle>
@@ -221,12 +213,19 @@ const DashboardView = ({ insights }) => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="h-[400px]">
+          <div className="h-[250px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
                 data={salaryData}
-                margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
+                margin={{ top: 10, right: 10, left: 0, bottom: 5 }}
+                barCategoryGap="25%"
               >
+                <defs>
+                  <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#60a5fa" />
+                    <stop offset="100%" stopColor="#2563eb" />
+                  </linearGradient>
+                </defs>
                 <CartesianGrid
                   strokeDasharray="3 3"
                   vertical={false}
@@ -235,15 +234,16 @@ const DashboardView = ({ insights }) => {
                 <XAxis
                   dataKey="name"
                   interval={0}
-                  tick={{ fontSize: 13, fill: "hsl(var(--muted-foreground))" }}
-                  axisLine={{ stroke: "hsl(var(--border))" }}
-                  tickLine={false}
-                />
-                <YAxis
                   tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }}
                   axisLine={false}
                   tickLine={false}
+                />
+                <YAxis
+                  tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
+                  axisLine={false}
+                  tickLine={false}
                   tickFormatter={(val) => `$${val}K`}
+                  width={50}
                 />
                 <Tooltip
                   cursor={{ fill: "hsl(var(--muted))", opacity: 0.3 }}
@@ -263,14 +263,12 @@ const DashboardView = ({ insights }) => {
                     return null;
                   }}
                 />
-                <Bar dataKey="median" radius={[4, 4, 0, 0]} maxBarSize={64}>
-                  {salaryData.map((_, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={getBarFill(index, salaryData.length)}
-                    />
-                  ))}
-                </Bar>
+                <Bar
+                  dataKey="median"
+                  fill="url(#barGradient)"
+                  radius={[6, 6, 0, 0]}
+                  maxBarSize={80}
+                />
               </BarChart>
             </ResponsiveContainer>
           </div>
