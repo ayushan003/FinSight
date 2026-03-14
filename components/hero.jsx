@@ -57,7 +57,7 @@ const HeroSection = () => {
         <div className="hero-image-wrapper mt-5 md:mt-0">
           <div ref={imageRef} className="hero-image">
             <Image
-              src="/dashboard.png"
+              src="/Dash.png"
               alt="FinSight AI Dashboard — Sector Analysis"
               width={1280}
               height={720}
