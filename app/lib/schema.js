@@ -27,6 +27,18 @@ export const onboardingSchema = z.object({
   ),
 });
 
+// Server-side schema for updateUser action.
+// The client form already transforms experience (string → number)
+// and skills (string → array) via onboardingSchema, so the server
+// receives the post-transform types.
+export const updateUserSchema = z.object({
+  industry: z.string().min(1, "Industry is required"),
+  subIndustry: z.string().optional(),
+  bio: z.string().max(500).optional(),
+  experience: z.number().min(0).max(50),
+  skills: z.array(z.string()).optional(),
+});
+
 export const contactSchema = z.object({
   email: z.string().email("Invalid email address"),
   mobile: z.string().optional(),
