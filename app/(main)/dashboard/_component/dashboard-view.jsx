@@ -29,12 +29,22 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 
 const DashboardView = ({ insights }) => {
-  const salaryData = insights.salaryRanges.map((range) => ({
-    name: range.role,
-    min: range.min / 1000,
-    max: range.max / 1000,
-    median: range.median / 1000,
-  }));
+  // Filter out incomplete entries and truncate long role names for display
+  const salaryData = insights.salaryRanges
+    .filter(
+      (range) =>
+        range.role &&
+        typeof range.min === "number" &&
+        typeof range.max === "number" &&
+        typeof range.median === "number"
+    )
+    .map((range) => ({
+      name: range.role.length > 20 ? range.role.slice(0, 18) + "…" : range.role,
+      fullName: range.role,
+      min: range.min / 1000,
+      max: range.max / 1000,
+      median: range.median / 1000,
+    }));
 
   const getDemandLevelColor = (level) => {
     switch (level.toLowerCase()) {
@@ -105,7 +115,7 @@ const DashboardView = ({ insights }) => {
             <div className="text-2xl font-bold">
               {insights.growthRate.toFixed(1)}%
             </div>
-            <Progress value={insights.growthRate} className="mt-2" />
+            <Progress value={Math.min(Math.max(insights.growthRate, 0), 100)} className="mt-2" />
           </CardContent>
         </Card>
 
@@ -154,14 +164,21 @@ const DashboardView = ({ insights }) => {
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={salaryData}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
+                <XAxis
+                  dataKey="name"
+                  angle={-35}
+                  textAnchor="end"
+                  interval={0}
+                  height={80}
+                  tick={{ fontSize: 12 }}
+                />
                 <YAxis />
                 <Tooltip
-                  content={({ active, payload, label }) => {
+                  content={({ active, payload }) => {
                     if (active && payload && payload.length) {
                       return (
                         <div className="bg-background border rounded-lg p-2 shadow-md">
-                          <p className="font-medium">{label}</p>
+                          <p className="font-medium">{payload[0]?.payload?.fullName}</p>
                           {payload.map((item) => (
                             <p key={item.name} className="text-sm">
                               {item.name}: ${item.value}K
