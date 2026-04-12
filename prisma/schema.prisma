@@ -1,0 +1,210 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Users ──────────────────────────────────────────────
+model User {
+  id          String   @id @default(uuid())
+  clerkUserId String   @unique
+  email       String   @unique
+  name        String?
+  imageUrl    String?
+  industry    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  bio         String?
+  experience  Int?
+  skills      Json?
+
+  assessments   Assessment[]
+  companyReport CompanyReport[]
+  topicAbility  UserTopicAbility[]
+}
+
+// ─── Market Data Pipeline ───────────────────────────────
+model SectorETF {
+  id        String   @id @default(uuid())
+  industry  String
+  symbol    String
+  name      String
+  createdAt DateTime @default(now())
+
+  dataPoints MarketDataPoint[]
+
+  @@unique([industry, symbol])
+  @@index([industry])
+}
+
+model MarketDataPoint {
+  id          String   @id @default(uuid())
+  etfId       String
+  etf         SectorETF @relation(fields: [etfId], references: [id])
+  date        DateTime
+  open        Float
+  high        Float
+  low         Float
+  close       Float
+  volume      BigInt
+  createdAt   DateTime @default(now())
+
+  @@unique([etfId, date])
+  @@index([etfId, date])
+}
+
+model ComputedMetrics {
+  id               String   @id @default(uuid())
+  industry         String   @unique
+  sma20            Float?
+  sma50            Float?
+  volatility30d    Float?
+  returnYTD        Float?
+  returnMTD        Float?
+  avgVolume        BigInt?
+  latestClose      Float?
+  previousClose    Float?
+  dataPointsCount  Int      @default(0)
+  computedAt       DateTime @default(now())
+
+  @@index([industry])
+}
+
+model IndustryInsight {
+  id                String   @id @default(uuid())
+  industry          String   @unique
+  salaryRanges      Json
+  growthRate        Float
+  demandLevel       String
+  topSkills         Json
+  marketOutlook     String
+  keyTrends         Json
+  recommendedSkills Json
+  aiNarrative       String?
+  lastUpdated       DateTime @default(now())
+  nextUpdate        DateTime
+}
+
+model DataRefreshLog {
+  id         String   @id @default(uuid())
+  industry   String
+  status     String   // "pending" | "fetching" | "computing" | "narrating" | "completed" | "failed"
+  message    String?
+  startedAt  DateTime @default(now())
+  completedAt DateTime?
+  durationMs Int?
+
+  @@index([industry, startedAt])
+}
+
+// ─── Question Bank & Adaptive Assessment ────────────────
+model Question {
+  id           String   @id @default(uuid())
+  industry     String
+  topic        String
+  difficulty   Float    @default(0.5) // 0.0 = easy, 1.0 = hard (IRT)
+  question     String
+  options      Json     // ["A", "B", "C", "D"]
+  correctAnswer String
+  explanation  String
+  createdAt    DateTime @default(now())
+
+  responses    QuestionResponse[]
+
+  @@index([industry, topic])
+  @@index([industry, difficulty])
+}
+
+model QuizSession {
+  id           String   @id @default(uuid())
+  userId       String
+  questionIds  Json     // ordered array of question IDs
+  answers      Json?    // array of user answers (null until submitted)
+  status       String   @default("active") // "active" | "completed" | "expired"
+  createdAt    DateTime @default(now())
+  completedAt  DateTime?
+  expiresAt    DateTime
+
+  @@index([userId, status])
+}
+
+model Assessment {
+  id             String   @id @default(uuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id])
+  quizScore      Float
+  questions      Json
+  category       String
+  improvementTip String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model UserTopicAbility {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  topic     String
+  ability   Float    @default(0.5) // 0.0-1.0 estimated via Elo
+  attempts  Int      @default(0)
+  correct   Int      @default(0)
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, topic])
+  @@index([userId])
+}
+
+model QuestionResponse {
+  id         String   @id @default(uuid())
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id])
+  userId     String
+  userAnswer String
+  isCorrect  Boolean
+  answeredAt DateTime @default(now())
+
+  // For spaced repetition
+  nextReviewAt DateTime?
+  interval     Int       @default(1) // days until next review
+
+  @@index([userId, questionId])
+  @@index([userId, nextReviewAt])
+}
+
+// ─── Company Reports ────────────────────────────────────
+model CompanyReport {
+  id                 String   @id @default(uuid())
+  userId             String
+  user               User     @relation(fields: [userId], references: [id])
+  content            String
+  companyDescription String?
+  companyName        String
+  sector             String
+  status             String   @default("draft")
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// ─── Market Anomaly Detection ───────────────────────────
+model MarketAnomaly {
+  id           String   @id @default(uuid())
+  industry     String
+  etfSymbol    String
+  date         DateTime
+  dailyReturn  Float
+  zScore       Float
+  direction    String   // "spike" | "drop"
+  magnitude    String   // "moderate" (2-3σ) | "extreme" (>3σ)
+  closingPrice Float
+  createdAt    DateTime @default(now())
+
+  @@unique([industry, etfSymbol, date])
+  @@index([industry, date])
+}
