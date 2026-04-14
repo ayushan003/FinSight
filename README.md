@@ -87,11 +87,11 @@ The anomaly detector computes a rolling 30-day Z-score on daily log returns for 
 
 | Date | Daily Return | Z-Score | Direction | What Happened |
 |------|-------------|---------|-----------|---------------|
-| Mar 20, 2026 | -1.23% | -2.6 | Drop | Fed held rates, hawkish guidance pushed bond yields up |
-| Mar 11, 2026 | -0.82% | -2.4 | Drop | CPI data above expectations, rate cut hopes faded |
-| Mar 10, 2026 | -0.69% | -2.3 | Drop | Spillover from equity selloff into credit markets |
-| Mar 9, 2026 | +0.60% | +2.2 | Spike | Flight-to-quality bid after banking sector weakness |
-| Mar 2, 2026 | -0.68% | -2.4 | Drop | Treasury auction weak demand, yield curve steepened |
+| Mar 20, 2026  | -1.23% | -2.6 | Drop | Fed held rates, hawkish guidance pushed bond yields up |
+| Mar 11, 2026  | -0.82% | -2.4 | Drop | CPI data above expectations, rate cut hopes faded |
+| Mar 10, 2026  | -0.69% | -2.3 | Drop | Spillover from equity selloff into credit markets |
+| Mar 9, 2026   | +0.60% | +2.2 | Spike | Flight-to-quality bid after banking sector weakness |
+| Mar 2, 2026   | -0.68% | -2.4 | Drop | Treasury auction weak demand, yield curve steepened |
 
 The detector correctly flags macro-driven moves. Anomalies are fed into the AI narrative prompt so the analysis explains observed events rather than hallucinating market context.
 
@@ -120,13 +120,13 @@ Z-score normalizes daily returns against the recent volatility regime. A -1% day
 
 ### Prerequisites
 - Node.js 18+
-- PostgreSQL database (Neon.tech or Supabase — both free)
+- PostgreSQL database (Neon.tech)
 
-### Required API Keys (all free tier)
+### Required API Keys 
 
 | Key | Source |
 |-----|--------|
-| `DATABASE_URL` | [Neon](https://neon.tech) or [Supabase](https://supabase.com) |
+| `DATABASE_URL` | [Neon](https://neon.tech) |
 | `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | [Clerk](https://clerk.com) |
 | `CLERK_SECRET_KEY` | [Clerk](https://clerk.com) |
 | `GEMINI_API_KEY` | [Google AI Studio](https://aistudio.google.com/apikey) |
@@ -136,11 +136,11 @@ Z-score normalizes daily returns against the recent volatility regime. A -1% day
 ### Steps
 
 ```bash
-git clone https://github.com/ayushan003/FinSight && cd FinSight
+git clone https://github.com/ayushan003/finsight && cd finsight
 npm install
 
-# Create .env.local and fill in keys
-nano .env.local
+# Create .env and fill in keys
+nano .env
 
 npx prisma db push
 npm run dev
