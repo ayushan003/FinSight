@@ -68,7 +68,7 @@ Quiz Engine (lib/assessment/)
 │       │           + topic diversity cap (≤3/topic)    │
 │       │                                               │
 │  Spaced Repetition ──→ Wrong answers scheduled for    │
-│       │                 review at 2^n day intervals   │
+│       │                 review at 2n day intervals    │
 │       │                 (capped at 30 days)           │ 
 │       │                                               │
 │  QuizSession ──→ DB-backed with 1hr TTL               │
