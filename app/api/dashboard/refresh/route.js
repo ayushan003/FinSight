@@ -1,6 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/prisma";
 import { runPipeline } from "@/lib/pipeline/orchestrator";
+import { getRecentAnomalies } from "@/lib/pipeline/anomaly";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -64,12 +65,17 @@ export async function POST(req) {
           where: { industry },
         });
 
+        // Fetch anomalies from DB (was missing — caused anomalies to
+        // disappear after clicking Refresh even though they were stored)
+        const anomalies = await getRecentAnomalies(industry, 10);
+
         send({
           status: "completed",
           message: "Dashboard updated with real market data",
           insight: {
             ...insight,
             metrics,
+            anomalies,
             salaryRanges: Array.isArray(insight.salaryRanges) ? insight.salaryRanges : [],
             topSkills: Array.isArray(insight.topSkills) ? insight.topSkills : [],
             keyTrends: Array.isArray(insight.keyTrends) ? insight.keyTrends : [],
