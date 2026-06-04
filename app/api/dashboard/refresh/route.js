@@ -65,8 +65,8 @@ export async function POST(req) {
           where: { industry },
         });
 
-        // Fetch anomalies from DB (was missing — caused anomalies to
-        // disappear after clicking Refresh even though they were stored)
+        // Fetch anomalies — was missing, caused anomalies section to
+        // go blank after clicking Refresh even though data was in DB
         const anomalies = await getRecentAnomalies(industry, 10);
 
         send({
